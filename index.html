@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eGifting — Emotionally Delivered</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--blue1:#1E73BE;
+--blue2:#0F5AA6;
+--gold1:#F59E0B;
+--gold2:#FFB703;
+}
+
+
+
+.nav-container{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+
+
+.logo{
+height:35px;
+width:auto;
+object-fit:contain;
+}
+
+.brand-name{
+font-weight:600;
+font-size:18px;
+} 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:linear-gradient(180deg,var(--blue1),var(--blue2));
+color:white;
+overflow-x:hidden;
+}
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:12px 40px;
+background:linear-gradient(135deg,var(--gold1),var(--gold2));
+z-index:1000;
+font-weight:600;
+}
+
+.hero{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding-top:60px;
+}
+
+.hero-title{
+font-size:46px;
+font-weight:700;
+}
+
+.gift-box{
+width:200px;
+height:200px;
+margin-top:40px;
+background:linear-gradient(135deg,var(--gold1),var(--gold2));
+border-radius:30px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:60px;
+cursor:pointer;
+box-shadow:0 25px 60px rgba(0,0,0,0.25);
+transition:0.3s;
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:2000;
+}
+
+.modal-content{
+background:white;
+color:black;
+padding:35px;
+border-radius:20px;
+width:450px;
+max-width:92%;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea{
+width:100%;
+margin:8px 0;
+padding:11px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+.modal-content button{
+margin-top:15px;
+padding:11px;
+border:none;
+border-radius:10px;
+background:linear-gradient(135deg,var(--gold1),var(--gold2));
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+.anon-btn{
+margin-top:10px;
+background:#eee !important;
+color:#333 !important;
+}
+
+.anon-btn.active{
+background:linear-gradient(135deg,var(--gold1),var(--gold2)) !important;
+color:white !important;
+}
+
+#successMessage{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+color:black;
+padding:35px;
+border-radius:15px;
+display:none;
+z-index:3000;
+}
+
+/* HEART EFFECT */
+
+.sparkle-layer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+overflow:hidden;
+z-index:0;
+}
+
+.spark-heart{
+position:absolute;
+color:#ff2e4d;
+opacity:0;
+animation:floatUp linear forwards;
+filter:drop-shadow(0 0 8px rgba(255,0,80,0.6));
+}
+
+@keyframes floatUp{
+0%{transform:translateY(0) scale(0.5);opacity:0;}
+20%{opacity:1;}
+60%{opacity:0.7;}
+100%{transform:translateY(-120vh) scale(0.8);opacity:0;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEART BACKGROUND -->
+<div class="sparkle-layer" id="sparkleLayer"></div>
+
+<nav>
+  <div class="nav-container">
+    <img src="logo.png" alt="eGifting Logo" class="logo">
+    <span class="brand-name"> 💌 eGifting</span>
+  </div>
+</nav>
+
+
+<section class="hero">
+<h1 class="hero-title">Digitally Curated. Emotionally Delivered.</h1>
+<p>Some messages are meant to be felt, not just read.</p>
+<div class="gift-box" id="giftBox">💌</div>
+</section>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+
+<form id="giftForm">
+
+<div id="step1">
+<h4>Who is this for? 💌</h4>
+
+<input type="text" id="receiverName" placeholder="Receiver Name" required>
+
+<select id="deliveryMethod" required>
+<option value="">Select Delivery Method</option>
+<option value="email">Email</option>
+<option value="whatsapp">WhatsApp</option>
+</select>
+
+<div id="emailField" style="display:none;">
+<input type="email" id="receiverEmail" placeholder="Receiver Email">
+</div>
+
+<div id="phoneField" style="display:none;">
+<input type="tel" id="receiverPhone" placeholder="+91XXXXXXXXXX">
+</div>
+
+<button type="button" id="anonymousToggle" class="anon-btn">
+Send Anonymously: OFF
+</button>
+
+<textarea id="instructions" placeholder="Your Message" required></textarea>
+
+<button type="button" id="continueBtn">Continue</button>
+</div>
+
+<div id="step2" style="display:none;">
+<h4>And who is this from? ✨</h4>
+
+<input type="text" id="senderName" placeholder="Your Name" required>
+<input type="email" id="senderEmail" placeholder="Your Email" required>
+<input type="tel" id="senderPhone" placeholder="Your Phone">
+
+<button type="submit">Confirm & Send Gift</button>
+</div>
+
+</form>
+</div>
+</div>
+
+<div id="successMessage">
+<h3>✨ Your message has been delivered successfully</h3>
+</div>
+
+
+
+
+
+
+<script>
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+/* HEART ANIMATION */
+const sparkleLayer = document.getElementById("sparkleLayer");
+
+function createHeart(){
+const heart = document.createElement("div");
+heart.className = "spark-heart";
+heart.innerHTML = "❤";
+heart.style.left = Math.random() * window.innerWidth + "px";
+heart.style.bottom = "-20px";
+heart.style.fontSize = (Math.random() * 18 + 12) + "px";
+heart.style.animationDuration = (Math.random() * 6 + 5) + "s";
+sparkleLayer.appendChild(heart);
+setTimeout(()=>{heart.remove();},10000);
+}
+
+setInterval(createHeart, 250);
+
+
+/* EMAILJS INIT */
+emailjs.init("VPtS_YuXz9RC-Qyv_");
+
+
+/* MODAL */
+document.getElementById("giftBox").onclick = function(){
+document.getElementById("modal").style.display="flex";
+};
+
+
+/* DELIVERY TOGGLE */
+document.getElementById("deliveryMethod").addEventListener("change", function(){
+document.getElementById("emailField").style.display =
+this.value==="email"?"block":"none";
+document.getElementById("phoneField").style.display =
+this.value==="whatsapp"?"block":"none";
+});
+
+
+/* ANONYMOUS */
+let isAnonymous = false;
+document.getElementById("anonymousToggle").addEventListener("click", function(){
+isAnonymous = !isAnonymous;
+this.classList.toggle("active");
+this.textContent = isAnonymous ? "Send Anonymously: ON" : "Send Anonymously: OFF";
+});
+
+
+/* STEP SWITCH */
+document.getElementById("continueBtn").addEventListener("click", function(){
+
+const method = document.getElementById("deliveryMethod").value;
+const email = document.getElementById("receiverEmail").value;
+const phone = document.getElementById("receiverPhone").value;
+
+if(!document.getElementById("receiverName").value){ alert("Enter receiver name"); return; }
+if(method===""){ alert("Select delivery method"); return; }
+if(method==="email" && !email){ alert("Enter receiver email"); return; }
+if(method==="whatsapp" && !phone){ alert("Enter WhatsApp number"); return; }
+
+document.getElementById("step1").style.display="none";
+document.getElementById("step2").style.display="block";
+
+});
+
+
+/* FORM SUBMIT WITH EMAILJS */
+document.getElementById("giftForm").addEventListener("submit", function(e){
+e.preventDefault();
+
+const templateParams = {
+receiver_name: document.getElementById("receiverName").value,
+delivery_method: document.getElementById("deliveryMethod").value,
+receiver_email: document.getElementById("receiverEmail").value,
+receiver_phone: document.getElementById("receiverPhone").value,
+message: document.getElementById("instructions").value,
+sender_name: document.getElementById("senderName").value,
+sender_email: document.getElementById("senderEmail").value,
+sender_phone: document.getElementById("senderPhone").value,
+anonymous: isAnonymous ? "Yes" : "No"
+};
+
+emailjs.send(
+
+"service_1vnau3i",
+"template_xdudk2i",
+templateParams
+)
+.then(function(){
+document.getElementById("modal").style.display="none";
+document.getElementById("successMessage").style.display="block";
+setTimeout(()=>{
+document.getElementById("successMessage").style.display="none";
+},4000);
+})
+.catch(function(error){
+console.log(error);
+alert("Email failed. Check console.");
+});
+
+});
+
+});
+</script>
+</body>
+</html>
